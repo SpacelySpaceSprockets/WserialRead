@@ -48,7 +48,23 @@ void MainWindow::openSerialPort(){
     serial->setStopBits(w_stopBits);
     serial->setFlowControl(w_flowControl);
 
-    if(serial->open(QIODevice::ReadOnly)){
+    //open depends on the current value of w_direction
+    QIODevice::OpenMode direct;
+    switch(w_direction){
+    case QSerialPort::Input:
+        direct = QIODevice::ReadOnly;
+        break;
+    case QSerialPort::Output:
+        direct = QIODevice::WriteOnly;
+        break;
+    case QSerialPort::ReadWrite:
+        direct = QIODevice::ReadWrite;
+        break;
+    default:
+        direct = QIODevice::ReadOnly;
+    }
+
+    if(serial->open(direct)){
         ui->statusBar->showMessage(tr("Connected to %1 : %2, %3, %4, %5, %6")
                                                .arg(w_portName).arg(w_baudRate).arg(w_dataBits)
                                                .arg(w_parity).arg(w_stopBits).arg(w_flowControl));
@@ -86,7 +102,13 @@ void MainWindow::disableButtons(){
     ui->openPortButton->setEnabled(false);
     ui->closePortButton->setEnabled(true);
 
+    if(serial->isOpen() && (w_direction==QSerialPort::Output || w_direction == QSerialPort::ReadWrite)){
+        enableSendLine();
+    }else{
+        disableSendLine();
+    }
 }
+
 
 void MainWindow::enableButtons(){
     //used to enable buttons when port is closed
@@ -102,6 +124,7 @@ void MainWindow::enableButtons(){
     ui->openPortButton->setEnabled(true);
     ui->closePortButton->setEnabled(false);
 
+    disableSendLine();
 
 }
 
@@ -132,7 +155,28 @@ void MainWindow::readData(){
 }
 
 void MainWindow::writeData(){
+    QString outText = ui->sendLine->text();
+    QByteArray output = QByteArray(outText.toLocal8Bit());
+    if(serial->isOpen()){
+        serial->write(output+'\n');
+        serial->waitForBytesWritten(-1);
 
+        ui->outputPane->putData('>>>> '+output+'\n');
+        qDebug()<<output<<"...written";
+    }else{
+        qDebug()<<"port not open";
+    }
+}
+
+
+void MainWindow::on_sendLineButton_clicked(){
+    writeData();
+    ui->sendLine->clear();
+}
+
+void MainWindow::on_sendLine_returnPressed(){
+    writeData();
+    ui->sendLine->clear();
 }
 
 void MainWindow::on_reloadButton_clicked(){
@@ -222,12 +266,15 @@ void MainWindow::on_directionBox_currentIndexChanged(int idx){
     switch(idx){
     case 0: w_direction=QSerialPort::Input;
         disableSendLine();
+        sendLineEnabled = false;
         break;
     case 1: w_direction=QSerialPort::Output;
-        enableSendLine();
+        //enableSendLine();
+        sendLineEnabled = true;
         break;
     case 2: w_direction=QSerialPort::AllDirections;
-        enableSendLine();
+        //enableSendLine();
+        sendLineEnabled = true;
         break;
     }
 

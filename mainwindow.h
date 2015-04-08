@@ -30,6 +30,8 @@ private:
     QSerialPort::FlowControl    w_flowControl;
     QSerialPort::Direction      w_direction;
 
+    bool sendLineEnabled;
+
     void initialize();
 
 
@@ -43,10 +45,12 @@ private:
 
     void getSerialPortInfo();
 
+    void writeData();
+
 public slots:
 
     void readData();
-    void writeData();
+
 
     void on_baudBox_currentIndexChanged(int);
     void on_portnameBox_currentIndexChanged(int);
@@ -59,6 +63,8 @@ public slots:
     void on_openPortButton_clicked();
     void on_closePortButton_clicked();
     void on_reloadButton_clicked();
+    void on_sendLineButton_clicked();
+    void on_sendLine_returnPressed();
 };
 
 #endif // MAINWINDOW_H

@@ -6,9 +6,7 @@
 wTerm::wTerm(QWidget *parent) :
     QPlainTextEdit(parent), localEchoEnabled(false)
 {
-    document()->setMaximumBlockCount(100);
-
-    document()->setMaximumBlockCount(100);
+    document()->setMaximumBlockCount(200);
 
     QPalette p = palette();
     p.setColor(QPalette::Base, Qt::black);
@@ -23,6 +21,7 @@ void wTerm::putData(const QByteArray &data){
     insertPlainText(QString(data));
     QScrollBar *bar = verticalScrollBar();
     bar->setValue(bar->maximum());
+
 }
 
 void wTerm::setLocaleEchoEnabled(bool set){

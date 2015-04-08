@@ -58,6 +58,7 @@ public slots:
 
     void on_openPortButton_clicked();
     void on_closePortButton_clicked();
+    void on_reloadButton_clicked();
 };
 
 #endif // MAINWINDOW_H

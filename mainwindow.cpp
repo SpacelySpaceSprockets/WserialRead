@@ -81,6 +81,7 @@ void MainWindow::disableButtons(){
     ui->parityBox->setEnabled(false);
     ui->portnameBox->setEnabled(false);
     ui->stopbitsBox->setEnabled(false);
+    ui->reloadButton->setEnabled(false);
 
     ui->openPortButton->setEnabled(false);
     ui->closePortButton->setEnabled(true);
@@ -96,6 +97,7 @@ void MainWindow::enableButtons(){
     ui->parityBox->setEnabled(true);
     ui->portnameBox->setEnabled(true);
     ui->stopbitsBox->setEnabled(true);
+    ui->reloadButton->setEnabled(true);
 
     ui->openPortButton->setEnabled(true);
     ui->closePortButton->setEnabled(false);
@@ -116,6 +118,7 @@ void MainWindow::disableSendLine(){
 void MainWindow::getSerialPortInfo(){
     QList<QSerialPortInfo> ports = QSerialPortInfo::availablePorts();
     QList<qint32> rates = QSerialPortInfo::standardBaudRates();
+    ui->portnameBox->clear();
     for(int i=0; i<ports.size(); i++){
         qDebug()<<ports[i].portName();
         qDebug()<<rates;
@@ -125,11 +128,15 @@ void MainWindow::getSerialPortInfo(){
 
 void MainWindow::readData(){
     QByteArray data = serial->readLine();
-    ui->outputPane->insertPlainText(data);
+    ui->outputPane->putData(data);
 }
 
 void MainWindow::writeData(){
 
+}
+
+void MainWindow::on_reloadButton_clicked(){
+    getSerialPortInfo();
 }
 
 void MainWindow::on_openPortButton_clicked(){

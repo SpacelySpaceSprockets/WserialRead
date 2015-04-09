@@ -35,6 +35,7 @@ void MainWindow::initialize(){
     w_direction= QSerialPort::Input;
 
     disableSendLine();
+    enableButtons();
     ui->statusBar->showMessage(tr("Not connected"));
 }
 
